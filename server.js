@@ -9,32 +9,45 @@ app.listen(PORT)
 
 var info = []
 
-app.post("/", (req,res)=>{  
+app.post("/", (req,res)=>{
     const txt = req.body
     try{
-        const sid = txt.isNew == "on" ? createAccount(txt) : isLegitLogin(txt)
-        if(!sid){throw Error}
-        res.send(JSON.stringify({"sid":sid}))
-        return
+        if(txt.isNew == "on"){
+            tryCreateAccount(txt,res)
+        }
+        else{
+            tryLoginUser(txt,res)
+        }
     }
     catch{
-        try{
-            if(txt.sid){
-                removeBadSid(res) 
-            }
-        }
-        catch{
-            sendError(res)
-        }
+        sendBadInputError(res)
     }
 })
 
-function makeId(digits=6){
-    var id = 0
-    for(let digit=0; digit<digits; digit++){
-        id += 10**digit * Math.ceil(Math.random()*9)
+// CREATE ACCOUNT
+
+function tryCreateAccount(txt,res){
+    if(isEmailTaken(txt.email)){
+        return sendEmailTakenError(res)
     }
-    return id
+    if(isPasswordBad(txt.password)){
+        return sendBadPasswordError(res)
+    }
+    const sid = createAccount(txt)
+    res.send(JSON.stringify({"sid":sid}))
+}
+
+function isEmailTaken(email){
+    for(var acc of info){
+        if(acc.email == email){
+            return true
+        }
+    }
+    return false
+}
+
+function isPasswordBad(password){
+    return false
 }
 
 function createAccount(txt,testSID=null){
@@ -45,6 +58,27 @@ function createAccount(txt,testSID=null){
         sid: sid
     })
     return sid
+}
+
+function makeId(digits=6){
+    var id = 0
+    for(let digit=0; digit<digits; digit++){
+        id += 10**digit * Math.ceil(Math.random()*9)
+    }
+    return id
+}
+
+// LOGIN USER
+
+function tryLoginUser(txt,res){
+    const sid = isLegitLogin(txt)
+    if(!sid && txt.sid){
+        return sendBadSidError(res)
+    }
+    else if(!sid){
+        return sendBadLoginError(res)
+    }
+    res.send(JSON.stringify({"sid":sid}))
 }
 
 function isLegitLogin(txt){
@@ -64,16 +98,32 @@ function isLegitLogin(txt){
     }
 }
 
-function sendError(res){
+// SEND ERROR
+
+function sendBadInputError(res){
+    const error = {error: "bad input"}
+    res.send(JSON.stringify(error))
+}
+
+function sendBadLoginError(res){
     const error = {error: "invalid login"}
     res.send(JSON.stringify(error))
 }
 
-function removeBadSid(res){
-    const error = {badSid: 1}
+function sendBadSidError(res){
+    const error = {badSid: "bad sid is removed"}
     res.send(JSON.stringify(error))
 }
 
+function sendEmailTakenError(res){
+    const error = {error: "email already has account"}
+    res.send(JSON.stringify(error))
+}
+
+function sendBadPasswordError(res){
+    const error = {error: "bad password"}
+    res.send(JSON.stringify(error))
+}
 
 // TESTS
 const testId = 5

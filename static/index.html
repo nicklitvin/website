@@ -44,7 +44,7 @@ function analyzeResponse(txt){
     }
     if(txt.badSid){
         localStorage.removeItem("sid",txt.sid)
-        console.log("removed bad sid")
+        console.log(txt.badSid)
     }
 }
 

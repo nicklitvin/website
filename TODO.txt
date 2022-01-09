@@ -1,42 +1,6 @@
 TODO
-check if email exists
 hold txt in db (MYSQL)
 log out button client
 password reset
 txt saver for client
 send email to user
-
-SERVER
-app.post
-
-txt
-if txt contains SID
-    if verified
-        send info
-    else
-        delete SID
-
-if txt.createAcc
-    info create id and account
-        send SID
-else
-    if verified 
-        send info
-    else
-        send err
-
-INDEX
-onload
-if SID
-    try connect
-    else delete SID
-
-onsubmit
-    send data as json
-    if success
-        create SID
-    else
-        show error
-
-DB
-    SID : txt
