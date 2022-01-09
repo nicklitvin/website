@@ -11,21 +11,21 @@ var info = []
 
 app.post("/", (req,res)=>{  
     const txt = req.body
-    a: try{
-        if(txt.isNew == "on"){
-            var SID = createAccount(txt)
-            res.send(JSON.stringify({"SID":SID}))
-            return
-        }
-        else{
-            var SID = isLegitLogin(txt)
-            if(!SID){throw Error}
-            res.send(JSON.stringify({"SID":SID}))
-            return
-        }
+    try{
+        const sid = txt.isNew == "on" ? createAccount(txt) : isLegitLogin(txt)
+        if(!sid){throw Error}
+        res.send(JSON.stringify({"sid":sid}))
+        return
     }
     catch{
-        sendError(res)
+        try{
+            if(txt.sid){
+                removeBadSid(res) 
+            }
+        }
+        catch{
+            sendError(res)
+        }
     }
 })
 
@@ -38,26 +38,39 @@ function makeId(digits=6){
 }
 
 function createAccount(txt,testSID=null){
-    var SID = testSID || makeId()
+    var sid = testSID || makeId()
     info.push({
         email: txt.email,
         password: txt.password,
-        sid: SID
+        sid: sid
     })
-    console.log(info) 
-    return SID
+    return sid
 }
 
 function isLegitLogin(txt){
-    for(let acc of info){
-        if(acc.email == txt.email && acc.password == txt.password){
-            return acc.sid
+    if(txt.sid){
+        for(let acc of info){
+            if(acc.sid == txt.sid){
+                return acc.sid
+            }
+        }
+    }   
+    else{
+        for(let acc of info){
+            if(acc.email == txt.email && acc.password == txt.password){
+                return acc.sid
+            }
         }
     }
 }
 
 function sendError(res){
     const error = {error: "invalid login"}
+    res.send(JSON.stringify(error))
+}
+
+function removeBadSid(res){
+    const error = {badSid: 1}
     res.send(JSON.stringify(error))
 }
 
@@ -72,12 +85,17 @@ const bad = {
     email: 1,
     password: 3
 }
+const sidLogin = {
+    sid: testId
+}
 
 console.assert(createAccount(txt, testId) == testId, "create account")
 console.assert(info.length == 1, "info add")
 console.assert(info[0].email == txt.email, "email")
 console.assert(info[0].password == txt.password, "password")
+console.assert(info[0].sid == testId, "sid")
 console.assert(isLegitLogin(bad) == null, "bad login" )
 console.assert(isLegitLogin(txt) == testId, "good login")
+console.assert(isLegitLogin(sidLogin) == testId, "good sid login")
 
 info = []

@@ -22,8 +22,8 @@ function getDataFromForm(login){
     return data
 }
 
-function submitForm(login){
-    const data = getDataFromForm(login)
+function submitForm(login,data=null){
+    var data = data || getDataFromForm(login)
     fetch(window.location.href, {
         method: "POST",
         headers: {'Content-Type': "application/json"},
@@ -38,9 +38,23 @@ function analyzeResponse(txt){
     if(txt.error){
         alert(txt.error)
     }
-    if(txt.SID){
-        localStorage.setItem("SID",txt.SID)
-        alert(localStorage.getItem("SID"))
+    if(txt.sid){
+        localStorage.setItem("sid",txt.sid)
+        alert(localStorage.getItem("sid"))
+    }
+    if(txt.badSid){
+        localStorage.removeItem("sid",txt.sid)
+        console.log("removed bad sid")
+    }
+}
+
+function automaticLogin(){
+    const sid = localStorage.getItem("sid")
+    if(sid){
+        const data = {
+            "sid": sid
+        }
+        submitForm(null,data)
     }
 }
 
@@ -50,6 +64,7 @@ window.addEventListener("load", ()=>{
         event.preventDefault()
         submitForm(login)
     })
+    automaticLogin()
 })
 
 </script>
