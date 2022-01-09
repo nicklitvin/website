@@ -1,0 +1,55 @@
+<h1>HOME</h1>
+
+<div id="loginDiv">
+    <form id="loginForm">
+        <input type="checkbox" id="isNew" name="isNew" checked>
+        <label for="isNew">Create Account</label><br><br>
+        <label for="email">Email:</label>
+        <input id="email" name="email" value="testemail"><br><br>
+        <label for="password">Password:</label>
+        <input id="password" name="password" value="testpassword"><br>
+        <button type="submit">Submit</button>
+    </form>
+</div>
+<script>
+
+function getDataFromForm(login){
+    var form = new FormData(login)
+    var data = {}
+    for(var a of form.entries()){
+        data[a[0]] = a[1]
+    }
+    return data
+}
+
+function submitForm(login){
+    const data = getDataFromForm(login)
+    fetch(window.location.href, {
+        method: "POST",
+        headers: {'Content-Type': "application/json"},
+        body: JSON.stringify(data)
+    })
+    .then(response => response.text())
+    .then(txt => analyzeResponse(JSON.parse(txt)))
+    .catch(err => console.log(err))
+}
+
+function analyzeResponse(txt){
+    if(txt.error){
+        alert(txt.error)
+    }
+    if(txt.SID){
+        localStorage.setItem("SID",txt.SID)
+        alert(localStorage.getItem("SID"))
+    }
+}
+
+window.addEventListener("load", ()=>{
+    var login = document.getElementById("loginForm")
+    login.addEventListener("submit", (event)=>{
+        event.preventDefault()
+        submitForm(login)
+    })
+})
+
+</script>
