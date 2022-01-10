@@ -1,6 +1,6 @@
 TODO
+delete account
 hold txt in db (MYSQL)
-log out button client
 password reset
 txt saver for client
 send email to user

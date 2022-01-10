@@ -1,3 +1,7 @@
+<head>
+    <link rel="stylesheet" href="style.css">
+</head>
+
 <h1>HOME</h1>
 
 <div id="loginDiv">
@@ -10,6 +14,10 @@
         <input id="password" name="password" value="testpassword"><br>
         <button type="submit">Submit</button>
     </form>
+</div>
+
+<div id="logoutDiv">
+    <button id="logoutButton">LOGOUT</button>
 </div>
 <script>
 
@@ -40,12 +48,23 @@ function analyzeResponse(txt){
     }
     if(txt.sid){
         localStorage.setItem("sid",txt.sid)
-        alert(localStorage.getItem("sid"))
+        console.log("logged in with sid =" + localStorage.getItem("sid"))
+        changeLoggedInState(1)
     }
     if(txt.badSid){
         localStorage.removeItem("sid",txt.sid)
-        console.log(txt.badSid)
+        console.log("bad sid" + txt.badSid)
     }
+}
+
+function changeLoggedInState(form){
+    // 0 == loggedOut, 1 == loggedIn
+    console.log("changing to " + form)
+    const loginDiv = document.getElementById("loginDiv")
+    loginDiv.style.display = form ? "none" : "block"
+
+    const logoutDiv = document.getElementById("logoutDiv")
+    logoutDiv.style.display = form ? "block" : "none"
 }
 
 function automaticLogin(){
@@ -63,6 +82,12 @@ window.addEventListener("load", ()=>{
     login.addEventListener("submit", (event)=>{
         event.preventDefault()
         submitForm(login)
+    })
+
+    var logout = document.getElementById("logoutButton")
+    logout.addEventListener("click", ()=>{
+        changeLoggedInState(0)
+        localStorage.removeItem("sid")
     })
     automaticLogin()
 })
