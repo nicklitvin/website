@@ -3,4 +3,3 @@ delete account
 hold txt in db (MYSQL)
 password reset
 txt saver for client
-send email to user

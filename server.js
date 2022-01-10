@@ -1,4 +1,5 @@
-import express from 'express'
+const express = require("express")
+const email = require("./modules/email.js")
 const app = express()
 
 app.use(express.static("static"))
@@ -149,3 +150,5 @@ console.assert(isLegitLogin(txt) == testId, "good login")
 console.assert(isLegitLogin(sidLogin) == testId, "good sid login")
 
 info = []
+
+email.send()
