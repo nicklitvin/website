@@ -8,6 +8,19 @@ Server and website containing common features such as account creation for futur
 npm install
 ```
 
-Setup automated email service:
+create /modules/email_config.js with the following:
 
-https://docs.sendgrid.com/for-developers/sending-email/quickstart-nodejs
+```
+const sender = <"sender's gmail">
+const senderPassword = <"sender's gmail password"> 
+const receiver = <"receiver's gmail for testing">
+
+module.exports = {
+    receiver: receiver,
+    sender: sender,
+    senderPassword: senderPassword
+}
+```
+
+In sender's Gmail account, turn on setting "Less secure app access"
+
