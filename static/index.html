@@ -1,4 +1,74 @@
-<head>
+<h1>HOME</h1>
+
+<div id="loginDiv">
+    <h3>LOGIN</h3>
+    <form id="loginForm">
+        <label for="email">Email:</label>
+        <input id="email" name="email" value=""><br><br>
+        <label for="password">Password:</label>
+        <input id="password" name="password" value="test"><br>
+        <button id="loginSubmit" type="submit">Submit</button>
+    </form>
+
+    <h3>CREATE ACCOUNT</h3>
+    <form id="createForm">
+        <label for="email">Email:</label>
+        <input id="email" name="email" value="asd"><br><br>
+        <button id="createSubmit" type="submit">Submit</button>
+    </form>
+</div>
+
+<script>
+
+function getDataFromForm(form){
+    var data = new FormData(form)
+    var dict = {}
+    for(var a of data.entries()){
+        dict[a[0]] = a[1]
+    }
+    return dict
+}
+
+function submitForm(login,action,testData=null){
+    var data = testData || getDataFromForm(login)
+    data['action'] = action
+    fetch(window.location.href, {
+        method: "POST",
+        headers: {'Content-Type': "application/json"},
+        body: JSON.stringify(data)
+    })
+    .then(response => response.text())
+    .then(data => analyzeResponse(JSON.parse(data)))
+    .catch(err => console.log(err))
+}
+
+function analyzeResponse(data){
+    if(data.message){
+        console.log(data.message)
+    }
+}
+
+window.addEventListener("load", ()=>{
+    const login = document.getElementById("loginForm")
+    login.addEventListener("submit", (event)=>{
+        event.preventDefault()
+        submitForm(login,'login')
+    })
+
+    const create = document.getElementById("createForm")
+    create.addEventListener("submit", (event)=>{
+        event.preventDefault()
+        submitForm(create,'create')
+    })
+})
+
+</script>
+
+
+
+
+
+<!-- <head>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -9,9 +79,9 @@
         <input type="checkbox" id="isNew" name="isNew" checked>
         <label for="isNew">Create Account</label><br><br>
         <label for="email">Email:</label>
-        <input id="email" name="email" value="testemail"><br><br>
+        <input id="email" name="email" value=""><br><br>
         <label for="password">Password:</label>
-        <input id="password" name="password" value="testpassword"><br>
+        <input id="password" name="password" value="test"><br>
         <button type="submit">Submit</button>
     </form>
 </div>
@@ -44,7 +114,7 @@ function submitForm(login,data=null){
 
 function analyzeResponse(txt){
     if(txt.error){
-        alert(txt.error)
+        console.log(txt.error)
     }
     if(txt.sid){
         localStorage.setItem("sid",txt.sid)
@@ -92,4 +162,4 @@ window.addEventListener("load", ()=>{
     automaticLogin()
 })
 
-</script>
+</script> -->

@@ -1,5 +1,10 @@
 TODO
+set password in new page
+set sid in browser
+
+Password reseting
 delete account
-hold txt in db (MYSQL)
-password reset
-txt saver for client
+store info in db (MYSQL)
+
+
+
