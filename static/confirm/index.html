@@ -1,26 +1,39 @@
+<!-- remove send verification automatically, for testing purposes-->
+
+<h1>SET PASSWORD</h1>
+<input id="password" type="password" value="test">
+<button id="submitButton">Submit</button> 
+
 <script>
 const url = window.location.href
 const fetchUrl = url.split("/?")[0]
 const pairs = url.split('/?')[1]
 const code = pairs.split('=')[1]
 
-const data = {
-    email: code,
-    password: "test"
+function getData(){
+    return({
+        email: code,
+        password: document.getElementById("password").value
+    })
 }
 
-console.log(url,fetchUrl,pairs)
 function sendVerification(){
+    const data = getData()
     fetch(fetchUrl,{
         method: "POST",
         headers: {'Content-Type': "application/json"},
         body: JSON.stringify(data)
     })
-    // .then(response => response.text())
-    // .then(txt => localStorage.sid = txt.sid)
-    // .then( ()=> alert(localStorage.sid))
-    // .then( ()=> window.location.href = url.split("/confirm")[0])
-    // .catch(err => console.log(err))
+    .then(response => response.text())
+    .then(txt => localStorage.sid = JSON.parse(txt).sid)
+    .then( () => alert(localStorage.sid))
+    .then( ()=> window.location.href = url.split("/confirm")[0])
+    .catch(err => console.log(err))
 }
-sendVerification()
+
+window.addEventListener("load", ()=>{
+    const button = document.getElementById("submitButton")
+    button.onclick = sendVerification
+    sendVerification()
+})
 </script>

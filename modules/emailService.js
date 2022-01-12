@@ -1,6 +1,38 @@
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest
-var Email = {send: function (a) { return new Promise(function (n, e) { a.nocache = Math.floor(1e6 * Math.random() + 1), a.Action = "Send"; var t = JSON.stringify(a); Email.ajaxPost("https://smtpjs.com/v3/smtpjs.aspx?", t, function (e) { n(e) }) }) }, ajaxPost: function (e, n, t) { var a = Email.createCORSRequest("POST", e); a.setRequestHeader("Content-type", "application/x-www-form-urlencoded"), a.onload = function () { var e = a.responseText; null != t && t(e) }, a.send(n) }, ajax: function (e, n) { var t = Email.createCORSRequest("GET", e); t.onload = function () { var e = t.responseText; null != n && n(e) }, t.send() }, createCORSRequest: function (e, n) { var t = new XMLHttpRequest; return "withCredentials" in t ? t.open(e, n, !0) : "undefined" != typeof XDomainRequest ? (t = new XDomainRequest).open(e, n) : t = null, t } };
+const names  = require('./email_config.js')
+const email = require("./emailSend.js")
+
+class EmailService{
+    constructor(url){
+        this.url = url
+    }
+
+    makeHtml(encoded){
+        const html = 
+            `
+            <h2>Did you create a new account?</h2>
+            <a href="${this.url}/confirm/?e=${encoded}">
+                <button>Confirm</button>    
+            </a>
+            `
+        console.log(html)
+        return(html)
+    }
+
+    send(receiver = names.receiver, encoded) {
+        email.send({
+            Host: "smtp.gmail.com",
+            Username: names.sender,
+            Password: names.senderPassword,
+            To: receiver,
+            From: names.sender,
+            Subject: "Confirmation",
+            Body: this.makeHtml(encoded),
+            IsBodyHtml: true
+        })
+        .then(message => console.log(`mail sent successfully to ${receiver}`))
+    }
+}
 
 module.exports = {
-    send: Email.send,
+    EmailService: EmailService
 }

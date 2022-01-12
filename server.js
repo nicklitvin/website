@@ -1,5 +1,4 @@
 const express = require("express")
-const email = require("./modules/email.js")
 const AccountManager = require("./modules/AccountManager.js")
 
 const app = express()

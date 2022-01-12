@@ -1,7 +1,6 @@
 TODO
-set password in new page
-set sid in browser
-
+automatic and normal login
+captcha
 Password reseting
 delete account
 store info in db (MYSQL)

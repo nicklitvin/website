@@ -1,11 +1,13 @@
 const Account = require("./Account.js")
 const CryptoJS = require("crypto-js")
+const email = require("./emailService.js")
 
 class AccountManager{
     constructor(key,url){
         this.key = key
         this.url = url
         this.accounts = []
+        this.email = new email.EmailService(url)
     }
 
     processVerificationRequest(req,res){
@@ -21,8 +23,12 @@ class AccountManager{
 
     createUserAccount(txt,res){
         const email = CryptoJS.AES.decrypt(txt.email, this.key).toString(CryptoJS.enc.Utf8)
-        const acc = new Account.Account(email,txt.password) 
-        this.accounts.push(acc)
+        if(!this.isEmailTaken(email)){
+            const acc = new Account.Account(email,txt.password)
+            acc.setSid()
+            this.accounts.push(acc)
+            this.sendUserSid(res,acc.sid)
+        }
     }
 
     processAccountRequest(req,res){
@@ -30,7 +36,7 @@ class AccountManager{
         console.log(txt)
         try{
             if(txt.action == "create"){
-                this.tryCreateAccount(txt,res)
+                this.sendVerificationCode(txt,res)
             }
             else{
                 this.tryLoginUser(txt,res)
@@ -41,14 +47,14 @@ class AccountManager{
         }
     }
     
-    tryCreateAccount(txt,res){
+    sendVerificationCode(txt,res){
         if(this.isEmailTaken(txt.email)){
             return this.sendEmailTakenError(res)
         }
         const encoded = CryptoJS.AES.encrypt(txt.email, this.key).toString()
-        const redirect = `${this.url}/confirm/?e=${encoded}`
-        // email.sendVerification(txt.email,encoded)
-        this.sendVerificationMessage(res,redirect)
+        this.email.send(txt.email,encoded)
+        console.log(`${this.url}/confirm/?e=${encoded}`)
+        this.sendVerificationMessage(res)
     }
     
     isEmailTaken(email){
@@ -75,6 +81,11 @@ class AccountManager{
     sendVerificationMessage(res,txt=null){
         const data = {message: txt || "verification sent to email"}
         res.send(JSON.stringify(data))
+    }
+
+    sendUserSid(res,sid=null){
+        const data = {sid: sid}
+        res.send(JSON.stringify(data)) 
     }
 }
 
