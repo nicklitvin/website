@@ -1,5 +1,5 @@
 TODO
-automatic and normal login
+tests for login and accounts created
 captcha
 Password reseting
 delete account

@@ -29,9 +29,8 @@ function getDataFromForm(form){
     return dict
 }
 
-function submitForm(login,action,testData=null){
+function submitForm(login,testData=null){
     var data = testData || getDataFromForm(login)
-    data['action'] = action
     fetch(window.location.href, {
         method: "POST",
         headers: {'Content-Type': "application/json"},
@@ -46,20 +45,27 @@ function analyzeResponse(data){
     if(data.message){
         console.log(data.message)
     }
+    if(data.url){
+        window.location.href = data.url
+    }
 }
 
 window.addEventListener("load", ()=>{
     const login = document.getElementById("loginForm")
     login.addEventListener("submit", (event)=>{
         event.preventDefault()
-        submitForm(login,'login')
+        submitForm(login)
     })
 
     const create = document.getElementById("createForm")
     create.addEventListener("submit", (event)=>{
         event.preventDefault()
-        submitForm(create,'create')
+        submitForm(create)
     })
+
+    if(localStorage.sid){
+        submitForm(null,{"sid":localStorage.sid})
+    }
 })
 
 </script>

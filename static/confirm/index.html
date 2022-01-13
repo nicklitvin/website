@@ -1,4 +1,4 @@
-<!-- remove send verification automatically, for testing purposes-->
+<!-- automatic send verification call is for testing purposes-->
 
 <h1>SET PASSWORD</h1>
 <input id="password" type="password" value="test">
@@ -17,6 +17,18 @@ function getData(){
     })
 }
 
+function analyzeResponse(data){
+    if(data.message){
+        alert(data.message)
+    }
+    if(data.sid){   
+        localStorage.sid = data.sid
+    }
+    if(data.url){
+        window.location.href = data.url
+    }
+}
+
 function sendVerification(){
     const data = getData()
     fetch(fetchUrl,{
@@ -25,15 +37,13 @@ function sendVerification(){
         body: JSON.stringify(data)
     })
     .then(response => response.text())
-    .then(txt => localStorage.sid = JSON.parse(txt).sid)
-    .then( () => alert(localStorage.sid))
-    .then( ()=> window.location.href = url.split("/confirm")[0])
+    .then(txt => analyzeResponse(JSON.parse(txt)))
     .catch(err => console.log(err))
 }
 
 window.addEventListener("load", ()=>{
     const button = document.getElementById("submitButton")
     button.onclick = sendVerification
-    sendVerification()
+    // sendVerification()
 })
 </script>
